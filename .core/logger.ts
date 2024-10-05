@@ -1,4 +1,11 @@
-import dotenv from 'dotenv';
+const isBrowser = typeof window !== 'undefined' && typeof document !== 'undefined';
+
+let dotenv: any;
+
+if(!isBrowser) {
+    dotenv = await import('dotenv');
+}
+
 import chalk from 'chalk';
 
 export enum LogLevel {
@@ -9,10 +16,8 @@ export enum LogLevel {
     NONE
 }
 
-dotenv.config();
-
 export class Logger {
-    private static environment: string = process.env.NODE_ENV || 'development';
+    private static environment: string = !isBrowser ? process.env.ENV! : 'production';
 
     private static timestamp(): string {
         const now = new Date();
@@ -23,7 +28,7 @@ export class Logger {
     }
 
     static setEnvironment(env: string): void {
-        this.environment = env;
+        this.environment = env || 'production';
     }
 
     private static shouldLog(forceLog: boolean): boolean {

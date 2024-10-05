@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+## [0.1.0] - 2024-10-05
+### Rollback
+- Rolled back from v1.0.0 to v0.1.0
+
 ## [1.0.0] - 2024-10-05
 ### Major
 - Updated major version from 0.1.0 to 1.0.0

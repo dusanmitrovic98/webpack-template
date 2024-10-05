@@ -1,10 +1,14 @@
-const path = require('path');
-const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
-const TerserPlugin = require('terser-webpack-plugin');
+import path from 'path';
+import { fileURLToPath } from 'url';
+import ForkTsCheckerWebpackPlugin from 'fork-ts-checker-webpack-plugin';
+import TerserPlugin from 'terser-webpack-plugin';
 
-module.exports = {
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+export default {
   entry: './index.ts',
-  mode: 'development', // Changed to development for better debugging
+  mode: 'development',
   devtool: 'source-map',
   module: {
     rules: [
@@ -52,7 +56,7 @@ module.exports = {
       new TerserPlugin({
         terserOptions: {
           compress: {
-            drop_console: false, // Changed to false for debugging
+            drop_console: false,
           },
         },
       }),

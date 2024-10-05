@@ -1,24 +1,27 @@
 import { exec } from 'child_process';
 import { promisify } from 'util';
-
-import { Logger } from './../logger';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import { Logger } from '../logger.js';
+import chalk from 'chalk';
 
 const execAsync = promisify(exec);
-const projectRoot = process.cwd();
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const projectRoot = path.resolve(__dirname, '../../');
 
 export async function pushChanges(): Promise<void> {
     try {
+        Logger.logSection("Git Push", chalk.blue);
         await execAsync('git push', { cwd: projectRoot });
-        Logger.log("Changes pushed successfully.");
+        Logger.success("Changes pushed successfully.");
     } catch (error: any) {
-        Logger.error("Failed to push changes:", error.message);
+        Logger.error(`Failed to push changes: ${error.message}`);
         process.exit(1);
     }
 }
 
-if (require.main === module) {
-    await pushChanges().catch(error => {
-        Logger.error("Error:", error.message);
-        process.exit(1);
-    });
-}
+pushChanges().catch(error => {
+    Logger.error(`Error: ${error.message}`);
+    process.exit(1);
+});

@@ -54,7 +54,7 @@ export class Logger {
         }
     }
 
-    static log(message: string, color: chalk.ChalkFunction = chalk.white, isBold: boolean = false): void {
+    static log(message: string, color: any = chalk.white, isBold: boolean = false): void {
         const formattedMessage = isBold ? chalk.bold(color(message)) : color(message);
         console.log(formattedMessage);
     }
@@ -68,7 +68,7 @@ export class Logger {
         }
     }
 
-    static logSection(title: string, color: chalk.ChalkFunction, forceLog: boolean = false) {
+    static logSection(title: string, color: any, forceLog: boolean = false) {
         if (this.shouldLog(forceLog)) {
             console.log(color(`\n■ ${title}`));
             console.log(color(`${'─'.repeat(50)}`));

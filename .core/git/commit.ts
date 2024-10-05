@@ -17,25 +17,26 @@ async function commitChanges(): Promise<void> {
         const packageJson = JSON.parse(await readFile(packageJsonPath, 'utf-8'));
         const commitMessage = `v${packageJson.version}`;
 
-        console.log(chalk.cyan.bold(commitMessage));
+        Logger.logSection("Git Commit", chalk.blue);
+
+        Logger.log(chalk.cyan.bold(commitMessage));
 
         const { stdout: statusOutput } = await execAsync('git status --porcelain', { cwd: projectRoot });
         if (!statusOutput) {
-            console.log("Nothing to commit.");
+            Logger.log("Nothing to commit.");
             return;
         }
 
         await execAsync('git add .', { cwd: projectRoot });
         await execAsync(`git commit -m "${commitMessage}"`, { cwd: projectRoot });
-        console.log(chalk.green("Changes committed successfully."));
+        Logger.log(chalk.green("Changes committed successfully."));
     } catch (error) {
-        console.error(chalk.red.bold("Git operation failed:", error instanceof Error ? error.message : String(error)));
+        Logger.error(chalk.red.bold("Git operation failed:", error instanceof Error ? error.message : String(error)));
         process.exit(1);
     }
 }
 
-// Run the function
 commitChanges().catch(error => {
-    console.error(chalk.red.bold("Error:", error instanceof Error ? error.message : String(error)));
+    Logger.error(chalk.red.bold("Error:", error instanceof Error ? error.message : String(error)));
     process.exit(1);
 });

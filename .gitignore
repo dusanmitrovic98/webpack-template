@@ -21,3 +21,4 @@
 .eslintcache
 .cspellcache
 package-lock.json
+.env

@@ -1,6 +1,6 @@
 {
   "name": "webpack-typescript-project",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Modern Webpack TypeScript setup with Babel",
   "main": "index.ts",
   "type": "module",
@@ -13,10 +13,18 @@
     "clean": "rm -rf dist",
     "lint": "eslint ./src/**/*.{ts,js}",
     "format": "prettier --write ./src/**/*.{ts,js}",
-    "commit": "tsx .core/git/commit.ts",
-    "push": "tsx .core/git/push.ts",
-    "sync": "tsx .core/git/sync.ts",
-    "git": "npm run commit && npm run push && npm run sync"
+    "commit": "node --loader ts-node/esm .core/git/commit.ts",
+    "push": "node --loader ts-node/esm .core/git/push.ts",
+    "sync": "node --loader ts-node/esm .core/git/sync.ts",
+    "git": "npm run commit && npm run push && npm run sync",
+    "version:major": "node --loader ts-node/esm .core/version-bump.ts major",
+    "version:minor": "node --loader ts-node/esm .core/version-bump.ts minor",
+    "version:patch": "node --loader ts-node/esm .core/version-bump.ts patch",
+    "rollback": "node --loader ts-node/esm .core/version-bump.ts rollback",
+    "release:major": "npm run version:major && npm run git",
+    "release:minor": "npm run version:minor && npm run git",
+    "release:patch": "npm run version:patch && npm run git",
+    "release": "npm run release:patch"
   },
   "devDependencies": {
     "@babel/core": "^7.24.0",
@@ -31,6 +39,7 @@
     "chalk": "^5.3.0",
     "core-js": "^3.36.0",
     "fork-ts-checker-webpack-plugin": "^9.0.2",
+    "semver": "^7.6.3",
     "terser-webpack-plugin": "^5.3.10",
     "ts-node": "^10.9.2",
     "tsx": "^4.19.1",
@@ -40,7 +49,6 @@
     "webpack-dev-server": "^5.0.2"
   },
   "dependencies": {
-    "dotenv": "^16.4.5",
-    "semver": "^7.5.4"
+    "dotenv": "^16.4.5"
   }
 }

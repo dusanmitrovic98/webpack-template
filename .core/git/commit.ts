@@ -1,9 +1,10 @@
-import { exec } from 'child_process';
-import { promisify } from 'util';
 import { readFile } from 'fs/promises';
+import { exec } from 'child_process';
+import { fileURLToPath } from 'url';
+import { promisify } from 'util';
 import chalk from 'chalk';
 import path from 'path';
-import { fileURLToPath } from 'url';
+
 import { Logger } from '../logger.js';
 
 const execAsync = promisify(exec);

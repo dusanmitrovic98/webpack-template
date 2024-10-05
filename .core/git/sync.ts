@@ -1,9 +1,10 @@
 import { exec } from 'child_process';
-import { promisify } from 'util';
-import path from 'path';
 import { fileURLToPath } from 'url';
-import { Logger } from '../logger.js';
+import { promisify } from 'util';
 import chalk from 'chalk';
+import path from 'path';
+
+import { Logger } from '../logger.js';
 
 const execAsync = promisify(exec);
 const __filename = fileURLToPath(import.meta.url);

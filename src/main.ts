@@ -1,7 +1,10 @@
+import { Logger } from "../.core/logger";
+
 export async function main(): Promise<void> {
-  console.log("Hello from main function!");
+  Logger.log("Starting main program...");
+  Logger.log("hello world!");
 
   Promise.resolve().then(() => {
-    console.log('Main program done.');
+    Logger.log('Main program completed.');
   });
 }

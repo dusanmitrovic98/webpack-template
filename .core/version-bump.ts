@@ -34,6 +34,7 @@ async function readJsonFile(filePath: string) {
     if (error.code === 'ENOENT' || error instanceof SyntaxError) {
       return null;
     }
+
     throw error;
   }
 }
@@ -44,9 +45,11 @@ async function writeJsonFile(filePath: string, content: unknown) {
 
 async function getVersionHistory(): Promise<VersionHistory> {
   const history = await readJsonFile(VERSION_HISTORY_FILE);
+
   if (!history) {
     throw new Error("version-history.json not found");
   }
+
   return history;
 }
 
@@ -119,11 +122,9 @@ async function rollbackGitHub(currentVersion: string, previousVersion: string): 
   try {
     const changeDescription = `Rolled back from v${currentVersion} to v${previousVersion}`;
     await updateChangelog(previousVersion, "rollback", changeDescription);
-
     await gitCommand(["add", "."], projectRoot);
     await gitCommand(["commit", "-m", `\"rollback v${currentVersion} to v${previousVersion}\"`], projectRoot);
     await gitCommand(["push", "origin", "main"], projectRoot);
-
     console.log("Changes pushed to GitHub successfully");
   } catch (error: any) {
     console.error("Error during GitHub rollback:", error.message);
@@ -133,10 +134,8 @@ async function rollbackGitHub(currentVersion: string, previousVersion: string): 
 
 export async function updateVersion(bumpType: BumpType) {
   Logger.logSection("Version Update", chalk.blue);
-
   const history = await getVersionHistory();
   const currentVersion = history.current;
-
   let newVersion: string;
   let changeDescription: string;
 
@@ -146,14 +145,13 @@ export async function updateVersion(bumpType: BumpType) {
     }
     newVersion = history.previous[0];
     changeDescription = `Rolled back from v${currentVersion} to v${newVersion}`;
-
     const updatedHistory: VersionHistory = {
       current: newVersion,
       previous: history.previous.slice(1),
     };
     await writeJsonFile(VERSION_HISTORY_FILE, updatedHistory);
-
     const packageJson = await readJsonFile(PACKAGE_JSON_PATH);
+
     if (packageJson) {
       packageJson.version = newVersion;
       await writeJsonFile(PACKAGE_JSON_PATH, packageJson);
@@ -168,8 +166,8 @@ export async function updateVersion(bumpType: BumpType) {
 
     newVersion = semver.inc(currentVersion, bumpType) || currentVersion;
     changeDescription = `Updated ${bumpType} version from ${currentVersion} to ${newVersion}`;
-
     const packageJson = await readJsonFile(PACKAGE_JSON_PATH);
+
     if (packageJson) {
       packageJson.version = newVersion;
       await writeJsonFile(PACKAGE_JSON_PATH, packageJson);
@@ -177,7 +175,6 @@ export async function updateVersion(bumpType: BumpType) {
 
     await updateVersionHistory(newVersion);
     await updateChangelog(newVersion, bumpType, changeDescription);
-
     console.log(`Version bumped to ${newVersion}`);
   }
 }

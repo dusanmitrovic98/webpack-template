@@ -1,4 +1,5 @@
 import chalk from 'chalk';
+
 import { Logger } from './logger';
 
 const isBrowser = typeof window !== 'undefined' && typeof document !== 'undefined';
@@ -39,6 +40,7 @@ async function prompt(question: string): Promise<string> {
             input: process.stdin,
             output: process.stdout
         });
+        
         return new Promise((resolve) => {
             rl.question(question, (answer: string) => {
                 rl.close();
@@ -52,6 +54,7 @@ async function readJsonFile(filePath: string): Promise<any> {
     if (isBrowser) {
         return null;
     }
+
     try {
         const content = await fs.readFile(filePath, 'utf-8');
         return JSON.parse(content);
@@ -64,6 +67,7 @@ async function writeJsonFile(filePath: string, content: any): Promise<void> {
     if (isBrowser) {
         return;
     }
+
     await fs.writeFile(filePath, JSON.stringify(content, null, 2));
 }
 
@@ -71,17 +75,21 @@ async function updateEnvFile(env: Partial<Env>, filename: string, varsToWrite: s
     if (isBrowser) {
         return;
     }
+
     let content = '';
+
     for (const key of varsToWrite) {
         if (env[key] !== undefined) {
             content += `${key}=${env[key]}\n`;
         }
     }
+
     await fs.writeFile(filename, content);
 }
 
 async function setupConfig(): Promise<Config> {
     let config: Config;
+
     if (isBrowser) {
         config = {
             APP_NAME: '',
@@ -105,11 +113,13 @@ async function setupConfig(): Promise<Config> {
 
     if (!config.ENV) {
         let isValidEnv = false;
+
         while (!isValidEnv) {
             const envInput = await prompt(
                 'Please enter the environment ("d" or "development" for development, "p" or "production" for production): '
             );
             const lowercaseInput = envInput.toLowerCase();
+
             if (lowercaseInput === 'd' || lowercaseInput === 'development') {
                 config.ENV = 'development';
                 isValidEnv = true;
@@ -133,8 +143,8 @@ async function setupConfig(): Promise<Config> {
 
 async function manageEnvironmentVariables(config: Config, env: Partial<Env>): Promise<Partial<Env>> {
     Logger.log(chalk.cyan('Environment Check Enabled'));
-
     let managing = true;
+
     while (managing) {
         Logger.log(chalk.cyan('\nCurrent environment variables:'));
 
@@ -197,6 +207,7 @@ async function saveEnvironmentChanges(config: Config, env: Partial<Env>): Promis
     if (isBrowser) {
         return;
     }
+
     const configPath = path.join(process.cwd(), 'config.json');
     await writeJsonFile(configPath, config);
 
@@ -218,7 +229,6 @@ async function saveEnvironmentChanges(config: Config, env: Partial<Env>): Promis
 
 export async function setupEnv(): Promise<Env> {
     Logger.clear();
-
     const config = await setupConfig();
     let env: Partial<Env> = { APP_NAME: config.APP_NAME, ENV: config.ENV };
     

@@ -10,7 +10,6 @@ import config from "./config.json";
 (async () => {
     try {
         Logger.clear();
-
         let env: Partial<Env> = {};
 
         if (!isBrowser) {
@@ -27,7 +26,6 @@ import config from "./config.json";
         }
 
         Logger.header(`${env!.APP_NAME!.toUpperCase()} - ${env!.ENV!.toUpperCase()} MODE`, true);
-
         Logger.logSection("Environment Variables", chalk.yellowBright, true);
 
         for (const [key, value] of Object.entries(env)) {

@@ -17,12 +17,10 @@ async function commitChanges(): Promise<void> {
         const packageJsonPath = path.join(projectRoot, 'package.json');
         const packageJson = JSON.parse(await readFile(packageJsonPath, 'utf-8'));
         const commitMessage = `v${packageJson.version}`;
-
         Logger.logSection("Git Commit", chalk.blue);
-
         Logger.log(chalk.cyan.bold(commitMessage));
-
         const { stdout: statusOutput } = await execAsync('git status --porcelain', { cwd: projectRoot });
+
         if (!statusOutput) {
             Logger.log("Nothing to commit.");
             return;

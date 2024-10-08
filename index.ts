@@ -14,7 +14,7 @@ async function setupEnvironment(): Promise<Partial<Env>> {
       process.exit(1);
     });
   }
-  
+
   return Object.entries(CONFIG).reduce((acc, [key, value]) => {
     if (typeof value !== 'object') {
       acc[key as keyof Env] = value as any;
@@ -37,7 +37,14 @@ function logEnvironmentVariables(env: Partial<Env>) {
 async function runMainProgram() {
   Logger.logSection('Main Program', chalk.magenta, true);
   const startTime = performance.now();
-  await main();
+
+  await main(async (response: any) => {
+    await Logger.logSection(response.message, chalk.cyan, true);
+  }, async (error: any) => {
+    await Logger.logSection("Program Failed", chalk.red, true);
+    throw error;
+  });
+
   const endTime = performance.now();
 
   Logger.logSection('Program Completed', chalk.cyan, true);

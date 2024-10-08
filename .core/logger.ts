@@ -27,7 +27,7 @@ export class Logger {
         return `${hours}:${minutes}:${seconds}`;
     }
 
-    static setEnvironment(env: string): void {
+    static async setEnvironment(env: string): Promise<void> {
         this.environment = env || 'production';
     }
 
@@ -35,36 +35,36 @@ export class Logger {
         return forceLog || this.environment === 'development';
     }
 
-    static success(message: string, forceLog: boolean = false): void {
+    static async success(message: string, forceLog: boolean = false): Promise<void> {
         if (this.shouldLog(forceLog)) {
             this.log(`${chalk.green('✔')} ${chalk.green(message)}`);
         }
     }
 
-    static info(message: string, forceLog: boolean = false): void {
+    static async info(message: string, forceLog: boolean = false): Promise<void> {
         if (this.shouldLog(forceLog)) {
             this.log(`${chalk.blue(message)}`);
         }
     }
 
-    static warn(message: string, forceLog: boolean = false): void {
+    static async warn(message: string, forceLog: boolean = false): Promise<void> {
         if (this.shouldLog(forceLog)) {
             this.log(`${chalk.yellow('⚠')} ${chalk.yellow(message)}`);
         }
     }
 
-    static error(message: string, forceLog: boolean = false): void {
+    static async error(message: string, forceLog: boolean = false): Promise<void> {
         if (this.shouldLog(forceLog)) {
             this.log(`${chalk.red('✖')} ${chalk.red(message)}`);
         }
     }
 
-    static log(message: string, color: any = chalk.white, isBold: boolean = false): void {
+    static async log(message: string, color: any = chalk.white, isBold: boolean = false): Promise<void> {
         const formattedMessage = isBold ? chalk.bold(color(message)) : color(message);
         console.log(formattedMessage);
     }
 
-    static header(text: string, forceLog: boolean = false) {
+    static async header(text: string, forceLog: boolean = false) {
         if (this.shouldLog(forceLog)) {
             console.log(chalk.bold(chalk.cyan(`
 ╔════════════════════════════════════════════════╗
@@ -73,20 +73,20 @@ export class Logger {
         }
     }
 
-    static logSection(title: string, color: any, forceLog: boolean = false) {
+    static async logSection(title: string, color: any, forceLog: boolean = false) {
         if (this.shouldLog(forceLog)) {
             console.log(color(`\n■ ${title}`));
             console.log(color(`${'─'.repeat(50)}`));
         }
     }
 
-    static logKeyValue(key: string, value: string, forceLog: boolean = false) {
+    static async logKeyValue(key: string, value: string, forceLog: boolean = false) {
         if (this.shouldLog(forceLog)) {
             console.log(`${chalk.bold(key.padEnd(15))} : ${value}`);
         }
     }
 
-    static clear() {
+    static async clear() {
         console.clear();
     }
 }

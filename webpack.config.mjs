@@ -43,7 +43,8 @@ export default {
       "crypto": false,
       "stream": false,
       "buffer": false,
-      "readline": false
+      "readline": false,
+      "browserify-fs": false
     }
   },
   output: {

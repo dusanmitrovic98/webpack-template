@@ -12,8 +12,11 @@
     "type-check": "npm run format && tsc --noEmit",
     "start": "node dist/bundle.js",
     "clean:dist": "rm -rf dist",
-    "clean:config": "rm -rf config.json",
+    "clean:config": "tsx ./.core/clean-config.ts",
     "clean": "npm run clean:dist && npm run clean:config",
+    "rename-app": "tsx ./.core/rename.ts",
+    "toggle-environment": "tsx ./.core/toggle-environment.ts",
+    "toggle-environment-check": "tsx ./.core/toggle-environment-check.ts",
     "format": "prettier --write ./src/**/*.{ts,js}",
     "commit": "tsx .core/git/commit.ts",
     "push": "tsx .core/git/push.ts",
@@ -53,6 +56,8 @@
     "webpack-dev-server": "^5.0.2"
   },
   "dependencies": {
+    "browserfs": "^1.4.3",
+    "browserify-fs": "^1.0.0",
     "buffer": "^6.0.3",
     "crypto-browserify": "^3.12.0",
     "dotenv": "^16.4.5",

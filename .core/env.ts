@@ -1,12 +1,11 @@
 import chalk from 'chalk';
 
+import { isRunningInBrowser } from '../src/utility/browser';
 import { Logger } from './logger';
-
-const isBrowser = typeof window !== 'undefined' && typeof document !== 'undefined';
 
 let fs: any, dotenv: any, path: any;
 
-if (!isBrowser) {
+if (!isRunningInBrowser) {
     fs = await import('fs/promises');
     dotenv = await import('dotenv');
     path = await import('path');
@@ -29,7 +28,7 @@ export interface Env {
 export const requiredVars = ['APP_NAME', 'ENV'];
 
 async function prompt(question: string): Promise<string> {
-    if (isBrowser) {
+    if (isRunningInBrowser) {
         return new Promise(resolve => {
             const answer = window.prompt(question);
             resolve(answer || '');
@@ -51,7 +50,7 @@ async function prompt(question: string): Promise<string> {
 }
 
 async function readJsonFile(filePath: string): Promise<any> {
-    if (isBrowser) {
+    if (isRunningInBrowser) {
         return null;
     }
 
@@ -64,7 +63,7 @@ async function readJsonFile(filePath: string): Promise<any> {
 }
 
 async function writeJsonFile(filePath: string, content: any): Promise<void> {
-    if (isBrowser) {
+    if (isRunningInBrowser) {
         return;
     }
 
@@ -72,7 +71,7 @@ async function writeJsonFile(filePath: string, content: any): Promise<void> {
 }
 
 async function updateEnvFile(env: Partial<Env>, filename: string, varsToWrite: string[]) {
-    if (isBrowser) {
+    if (isRunningInBrowser) {
         return;
     }
 
@@ -90,7 +89,7 @@ async function updateEnvFile(env: Partial<Env>, filename: string, varsToWrite: s
 async function setupConfig(): Promise<Config> {
     let config: Config;
 
-    if (isBrowser) {
+    if (isRunningInBrowser) {
         config = {
             APP_NAME: '',
             ENV: '',
@@ -132,7 +131,7 @@ async function setupConfig(): Promise<Config> {
         }
     }
 
-    if (!isBrowser) {
+    if (!isRunningInBrowser) {
         const configPath = path.join(process.cwd(), 'config.json');
         await writeJsonFile(configPath, config);
         Logger.log(chalk.green('Updated config.json with new values'));
@@ -204,7 +203,7 @@ async function manageEnvironmentVariables(config: Config, env: Partial<Env>): Pr
 }
 
 async function saveEnvironmentChanges(config: Config, env: Partial<Env>): Promise<void> {
-    if (isBrowser) {
+    if (isRunningInBrowser) {
         return;
     }
 
@@ -232,7 +231,7 @@ export async function setupEnv(): Promise<Env> {
     const config = await setupConfig();
     let env: Partial<Env> = { APP_NAME: config.APP_NAME, ENV: config.ENV };
     
-    if (!isBrowser) {
+    if (!isRunningInBrowser) {
         const envFile = config.ENV === 'development' ? '.env' : '.env.production';
 
         if (config.ENV === 'development') {
@@ -259,7 +258,7 @@ export async function setupEnv(): Promise<Env> {
         }
     }
 
-    if (!isBrowser) {
+    if (!isRunningInBrowser) {
         await saveEnvironmentChanges(config, env);
     }
 

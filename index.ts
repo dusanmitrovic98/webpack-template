@@ -1,12 +1,12 @@
 import chalk from 'chalk';
 import * as fs from 'fs';
+
+import { isRunningInBrowser } from './src/utility/browser';
 import { Env, requiredVars, setupEnv } from './.core/env';
 import { Logger } from './.core/logger';
 import { CONFIG } from './src/config';
 import { main } from './src/main';
 import config from './config.json';
-
-const isRunningInBrowser = typeof window !== 'undefined' && typeof document !== 'undefined';
 
 async function initEnv(): Promise<Partial<Env>> {
   if (!isRunningInBrowser) {
@@ -25,21 +25,37 @@ async function initEnv(): Promise<Partial<Env>> {
 }
 
 function displayEnvironmentInfo(env: Partial<Env>) {
-  if (isRunningInBrowser) return;
+  if (isRunningInBrowser) {
+    Logger.header(`${config.APP_NAME!.toUpperCase()} - ${config.ENV!.toUpperCase()} MODE`, true);
+    Logger.logSection('Configuration Variables', chalk.yellowBright, true);
 
-  Logger.header(`${env.APP_NAME!.toUpperCase()} - ${env.ENV!.toUpperCase()} MODE`, true);
-  Logger.logSection('Environment Variables', chalk.yellowBright, true);
+    let tempConfig: any = {};
 
-  Object.entries(env).forEach(([key, value]) => {
-    if (requiredVars.includes(key) || key !== 'ENV') {
-      Logger.logKeyValue(key, value!, true);
-    }
-  });
+    Object.entries(config).forEach(([key, value]) => {
+      if (key != 'environmentVariables' && key !== 'envCheck') {
+        tempConfig[key] = value;
+      }
+    });
+
+    Object.assign(CONFIG, tempConfig);
+
+    Object.entries(CONFIG).forEach(([key, value]) => {
+        Logger.logKeyValue(key, value as string, { forceLog: true });
+    });
+  } else {
+    Logger.header(`${env.APP_NAME!.toUpperCase()} - ${env.ENV!.toUpperCase()} MODE`, true);
+    Logger.logSection('Environment Variables', chalk.yellowBright, true);
+
+    Object.entries(env).forEach(([key, value]) => {
+      if (requiredVars.includes(key) || key !== 'ENV') {
+        Logger.logKeyValue(key, value!, { forceLog: true });
+      }
+    });
+  }
 }
 
 async function mergeConfigFile(env: Partial<Env>): Promise<void> {
-  if (isRunningInBrowser) 
-  {
+  if (isRunningInBrowser) {
     if (Object.keys(CONFIG).length === 0) {
       Object.assign(CONFIG, config);
     }
@@ -75,14 +91,14 @@ async function executeMainProgram() {
   Logger.logKeyValue(
     'Main program execution time',
     `${chalk.green(`${(endTime - startTime).toFixed(2)} ms\n`)}`,
-    true
+    { forceLog: true },
   );
 }
 
 async function startApplication() {
   try {
-    Logger.clear();
     const env = await initEnv();
+    Logger.clear();
     displayEnvironmentInfo(env);
     await mergeConfigFile(env);
     await executeMainProgram();

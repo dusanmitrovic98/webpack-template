@@ -13,7 +13,7 @@ export async function main(
     await Logger.log(`config: ${JSON.stringify(CONFIG)}`, chalk.white, {
       timestamp: true,
     });
-    STATE.PORT = 60002;
+    STATE.PORT = 60002; 
     await Logger.log(`state: ${JSON.stringify(STATE)}`, chalk.white, {
       timestamp: true,
     });
@@ -23,7 +23,7 @@ export async function main(
       const helloWorldHtmlElement = document.createElement("div");
       helloWorldHtmlElement.textContent = "Hello World!";
       document.body.appendChild(helloWorldHtmlElement);
-      await Logger.log("hello world!", chalk.green, { timestamp: true });
+      await Logger.log("hello browser!", chalk.green, { timestamp: true });
     } else {
       await Logger.log("hello world from ./src/main.ts!", chalk.green, {
         timestamp: true,

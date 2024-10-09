@@ -1,14 +1,15 @@
 import chalk from 'chalk';
-
+import * as fs from 'fs';
 import { Env, requiredVars, setupEnv } from './.core/env';
 import { Logger } from './.core/logger';
 import { CONFIG } from './src/config';
 import { main } from './src/main';
+import config from './config.json';
 
-const isBrowser = typeof window !== 'undefined' && typeof document !== 'undefined';
+const isRunningInBrowser = typeof window !== 'undefined' && typeof document !== 'undefined';
 
-async function setupEnvironment(): Promise<Partial<Env>> {
-  if (!isBrowser) {
+async function initEnv(): Promise<Partial<Env>> {
+  if (!isRunningInBrowser) {
     return setupEnv().catch(error => {
       Logger.error('Error:', error.message);
       process.exit(1);
@@ -23,7 +24,9 @@ async function setupEnvironment(): Promise<Partial<Env>> {
   }, {} as Partial<Env>);
 }
 
-function logEnvironmentVariables(env: Partial<Env>) {
+function displayEnvironmentInfo(env: Partial<Env>) {
+  if (isRunningInBrowser) return;
+
   Logger.header(`${env.APP_NAME!.toUpperCase()} - ${env.ENV!.toUpperCase()} MODE`, true);
   Logger.logSection('Environment Variables', chalk.yellowBright, true);
 
@@ -34,7 +37,29 @@ function logEnvironmentVariables(env: Partial<Env>) {
   });
 }
 
-async function runMainProgram() {
+async function mergeConfigFile(env: Partial<Env>): Promise<void> {
+  if (isRunningInBrowser) 
+  {
+    if (Object.keys(CONFIG).length === 0) {
+      Object.assign(CONFIG, config);
+    }
+
+    return;
+  }
+
+  if (fs.existsSync('config.json')) {
+    const fileConfig = JSON.parse(fs.readFileSync('config.json', 'utf8'));
+    Object.assign(CONFIG, fileConfig);
+
+    Object.keys(env).forEach(key => {
+      if (!(key in CONFIG)) {
+        CONFIG[key as keyof typeof CONFIG] = env[key as keyof Env];
+      }
+    });
+  }
+}
+
+async function executeMainProgram() {
   Logger.logSection('Main Program', chalk.magenta, true);
   const startTime = performance.now();
 
@@ -47,7 +72,6 @@ async function runMainProgram() {
 
   const endTime = performance.now();
 
-  Logger.logSection('Program Completed', chalk.cyan, true);
   Logger.logKeyValue(
     'Main program execution time',
     `${chalk.green(`${(endTime - startTime).toFixed(2)} ms\n`)}`,
@@ -55,12 +79,13 @@ async function runMainProgram() {
   );
 }
 
-async function start() {
+async function startApplication() {
   try {
     Logger.clear();
-    const env = await setupEnvironment();
-    logEnvironmentVariables(env);
-    await runMainProgram();
+    const env = await initEnv();
+    displayEnvironmentInfo(env);
+    await mergeConfigFile(env);
+    await executeMainProgram();
   } catch (error: any) {
     Logger.logSection('Error Occurred', chalk.red, true);
     console.error(chalk.red(`${error.message}`));
@@ -69,5 +94,5 @@ async function start() {
 }
 
 (async () => {
-  await start();
+  await startApplication();
 })();

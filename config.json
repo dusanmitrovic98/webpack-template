@@ -2,5 +2,5 @@
   "APP_NAME": "webpack-template",
   "ENV": "development",
   "environmentVariables": [],
-  "envCheck": false
+  "envCheck": true
 }

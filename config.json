@@ -1,6 +1,6 @@
 {
-  "APP_NAME": "",
-  "ENV": "",
+  "APP_NAME": "webpack-template",
+  "ENV": "production",
   "environmentVariables": [],
   "envCheck": true
 }

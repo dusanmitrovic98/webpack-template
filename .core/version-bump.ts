@@ -158,7 +158,7 @@ export async function updateVersion(bumpType: BumpType) {
     }
 
     await rollbackGitHub(currentVersion, newVersion);
-    Logger.success(`Rolled back to version ${newVersion}`);
+    Logger.success(`Rolled back to version ${newVersion}`, { forceLog: true, timestamp: true });
   } else {
     if (!semver.valid(currentVersion)) {
       throw new Error(`Invalid version: ${currentVersion}`);

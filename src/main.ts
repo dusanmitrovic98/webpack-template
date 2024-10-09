@@ -13,7 +13,7 @@ export async function main(
     await Logger.log(`config: ${JSON.stringify(CONFIG)}`, chalk.white, {
       timestamp: true,
     });
-    STATE.PORT = 60002; 
+    STATE.PORT = 60002;
     await Logger.log(`state: ${JSON.stringify(STATE)}`, chalk.white, {
       timestamp: true,
     });

@@ -44,7 +44,6 @@ export default {
       "stream": false,
       "buffer": false,
       "readline": false,
-      "browserify-fs": false
     }
   },
   output: {
